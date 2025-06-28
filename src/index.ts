@@ -60,7 +60,6 @@ function constructDNSRecord(request: Request): AddressableRecord {
 }
 
 async function update(clientOptions: ClientOptions, newRecord: AddressableRecord): Promise<Response> {
-	console.log(clientOptions);
 	const cloudflare = new Cloudflare(clientOptions);
 
 	const tokenStatus = (await cloudflare.user.tokens.verify()).status;
@@ -118,10 +117,12 @@ export default {
 
 		try {
 			// Construct client options and DNS record
+			console.log('Constructing client options and DNS record...');
 			const clientOptions = constructClientOptions(request);
 			const record = constructDNSRecord(request);
 
 			// Run the update function
+			console.log('Updating DNS record for ' + record.name + ' (' + record.type + ') to ' + record.content);
 			return await update(clientOptions, record);
 		} catch (error) {
 			if (error instanceof HttpError) {
