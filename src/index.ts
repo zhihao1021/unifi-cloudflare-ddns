@@ -62,12 +62,12 @@ function constructDNSRecord(request: Request): AddressableRecord {
 async function update(clientOptions: ClientOptions, newRecord: AddressableRecord): Promise<Response> {
 	const cloudflare = new Cloudflare(clientOptions);
 
-	console.log('Verifying API Token...');
 	const tokenStatus = (await cloudflare.user.tokens.verify()).status;
 	if (tokenStatus !== 'active') {
 		throw new HttpError(401, 'This API Token is ' + tokenStatus);
 	}
 
+	console.log('API Token is valid and active.');
 	const zones = (await cloudflare.zones.list()).result;
 	if (zones.length > 1) {
 		throw new HttpError(400, 'More than one zone was found! You must supply an API Token scoped to a single zone.');
@@ -77,6 +77,7 @@ async function update(clientOptions: ClientOptions, newRecord: AddressableRecord
 
 	const zone = zones[0];
 
+	console.log("Looking for DNS record for " + newRecord.name + " (" + newRecord.type + ") in zone " + zone.name);
 	const records = (
 		await cloudflare.dns.records.list({
 			zone_id: zone.id,
@@ -96,6 +97,7 @@ async function update(clientOptions: ClientOptions, newRecord: AddressableRecord
 	const proxied = currentRecord.proxied ?? false; // Default to `false` if `proxied` is undefined
 	const comment = currentRecord.comment;
 
+	console.log('Found existing DNS record: ' + currentRecord.name + ' (' + currentRecord.type + ') with content: ' + currentRecord.content);
 	await cloudflare.dns.records.update(records[0].id, {
 		content: newRecord.content,
 		zone_id: zone.id,
