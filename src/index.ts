@@ -62,6 +62,7 @@ function constructDNSRecord(request: Request): AddressableRecord {
 async function update(clientOptions: ClientOptions, newRecord: AddressableRecord): Promise<Response> {
 	const cloudflare = new Cloudflare(clientOptions);
 
+	console.log('Verifying API Token...');
 	const tokenStatus = (await cloudflare.user.tokens.verify()).status;
 	if (tokenStatus !== 'active') {
 		throw new HttpError(401, 'This API Token is ' + tokenStatus);
@@ -117,7 +118,6 @@ export default {
 
 		try {
 			// Construct client options and DNS record
-			console.log('Constructing client options and DNS record...');
 			const clientOptions = constructClientOptions(request);
 			const record = constructDNSRecord(request);
 
