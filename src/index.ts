@@ -61,6 +61,7 @@ function constructDNSRecord(request: Request): AddressableRecord {
 
 async function update(clientOptions: ClientOptions, newRecord: AddressableRecord): Promise<Response> {
 	const cloudflare = new Cloudflare(clientOptions);
+	console.log("123");
 
 	const tokenStatus = (await cloudflare.user.tokens.verify()).status;
 	if (tokenStatus !== 'active') {
